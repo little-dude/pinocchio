@@ -35,7 +35,6 @@ class Decorator(Plugin):
         self.conf = config
 
         # configure logging
-
         logger = logging.getLogger(__name__)
         logger.propagate = 0
 
@@ -52,7 +51,6 @@ class Decorator(Plugin):
         logger.setLevel(lvl)
 
         # enable plugin & save decorator file name, if given.
-
         if options.decorator_file:
             self.enabled = True
             self.decorator_file = options.decorator_file
@@ -95,7 +93,6 @@ class Decorator(Plugin):
         """
         fullname = '%s.%s' % (func.__module__,
                               func.__name__)
-
         self._attach_attributes(fullname, func)
 
         # indicate no preferences re running this test.

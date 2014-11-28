@@ -12,8 +12,13 @@ import nose.case
 import logging
 import os
 from nose.plugins.base import Plugin
-from StringIO import StringIO as p_StringO
-from cStringIO import OutputType as c_StringO
+import string
+
+try:
+    from StringIO import StringIO as p_StringO
+except:
+    from io import StringIO as p_StringO
+
 import traceback
 
 def write_test_output(test, output, dirname, prefix=''):
@@ -22,12 +27,17 @@ def write_test_output(test, output, dirname, prefix=''):
     filename = '%s%s.txt' % (prefix, testname,)
     if dirname:
         filename = os.path.join(dirname, filename)
-        
+
     fp = open(filename, 'w')
     fp.write(output)
     fp.close()
 
 log = logging.getLogger(__name__)
+
+# Based on code from http://stackoverflow.com/a/295146/28275
+valid_chars = frozenset("-_.()%s%s" % (string.ascii_letters, string.digits))
+def sanitize_filename(name):
+    return ''.join(c for c in name if c in valid_chars)
 
 def calc_testname(test):
     # For errors at module-level nose passes a context instead of a test case.
@@ -35,14 +45,11 @@ def calc_testname(test):
         name = test.context.__name__
     else:
         name = str(test)
-    if ' ' in name:
-        name = name.split(' ')[1]
 
-    return name
+    return sanitize_filename(name)
 
 def get_stdout():
-    if isinstance(sys.stdout, c_StringO) or \
-           isinstance(sys.stdout, p_StringO):
+    if isinstance(sys.stdout, p_StringO):
         return sys.stdout.getvalue()
     return None
 
@@ -88,7 +95,7 @@ class OutputSave(Plugin):
             self.save_directory = os.path.abspath(self.save_directory)
 
             try:
-                os.mkdir(self.save_directory)
+                os.makedirs(self.save_directory)
             except OSError:
                 pass
 
@@ -101,7 +108,7 @@ class OutputSave(Plugin):
             capt = exception_text
         else:
             capt += exception_text
-        
+
         write_test_output(test, capt, self.save_directory, prefix='error-')
 
     def addFailure(self, test, err):
