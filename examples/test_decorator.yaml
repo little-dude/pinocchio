@@ -1,0 +1,47 @@
+test_decorator.TestMeTwo: {two: }
+test_decorator.TestMeTwo.test_me_three: {three: }
+test_decorator.test_me_one: {one: }
+test_decorator.TestMeWithValues: {runlevel: default}
+test_decorator.TestMeWithValues.test_me_runlevel_quick: 
+    runlevel: quick
+    subtopologies: [default, mescouilles]
+test_decorator.TestMeWithValues.test_me_runlevel_express: {runlevel: express}
+test_decorator.TestMeWithValues.test_me_runlevel_extensive: {runlevel: extensive}
+test_decorator.fun_test_multiple_attr: {fun_one: , fun_two: }
+test_decorator.TestMultipleAttr: {class_one: , class_two: }
+test_decorator.TestMultipleAttr.test_one_and_two: {meth_one: , meth_two: }
+
+#test_decorator.: 
+#    - name: test_decorator
+#      classes:
+#          - name: TestMeTwo
+#            attributes:
+#                - two
+#            methods:
+#                - name: test_me_three
+#                  attributes:
+#                      - three
+#          - name: TestMeWithValues
+#            attributes:
+#                - runlevel: default
+#            methods:
+#                - name: test_me_runlevel_quick
+#                  attributes:
+#                      - runlevel: quick
+#                      - subtopologies: [default, pute]
+#                - name: test_me_runlevel_express
+#                  attributes:
+#                      - runlevel: express
+#                      - somelist: [foo, bar, chatte]
+#                - name: test_me_runlevel_express
+#                  attributes:
+#                      - runlevel: express
+#                      - somelist: [foo, bar, chatte]
+#test_decorator.TestMeWithValues.test_me_runlevel_extensive: [runlevel: extensive]
+#      functions:
+#          - name: test_me_one
+#            attributes:
+#                - one
+#test_decorator.fun_test_multiple_attr: [fun_one, fun_two]
+#test_decorator.TestMultipleAttr: [class_one, class_two]
+#test_decorator.TestMultipleAttr.test_one_and_two: [meth_one, meth_two]

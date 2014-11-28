@@ -11,6 +11,7 @@ err = sys.stderr
 
 import logging
 import os
+import pyaml
 from nose.plugins.base import Plugin
 
 log = logging.getLogger(__name__)
@@ -27,12 +28,13 @@ class Decorator(Plugin):
                           action="store",
                           dest="decorator_file",
                           default=None,
-                          help="Apply attributes in this file to matching functions, classes, and methods")
+                          help="Apply attributes in this file to matching \
+                          functions, classes, and methods")
 
     def configure(self, options, config):
         self.conf = config
 
-        ### configure logging
+        # configure logging
 
         logger = logging.getLogger(__name__)
         logger.propagate = 0
@@ -49,7 +51,7 @@ class Decorator(Plugin):
             lvl = logging.INFO
         logger.setLevel(lvl)
 
-        ### enable plugin & save decorator file name, if given.
+        # enable plugin & save decorator file name, if given.
 
         if options.decorator_file:
             self.enabled = True
@@ -59,33 +61,10 @@ class Decorator(Plugin):
         """
         Called before any tests are run.
         """
-
         filename = self.decorator_file
-
         fp = open(filename)
-
-        curtains = {}
-        for line in fp:
-
-            # skip empty lines or lines with comments ('#')
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-
-            # parse attributes...
-            name, attribs = line.split(':')
-            name = name.strip()
-            attribs = [a.strip() for a in attribs.split(',')]
-
-            # ...and store 'em.
-            l = curtains.get(name, [])
-            l.extend(attribs)
-            curtains[name] = l
-
-        # save the attributes in 'self.curtains'.
-        self.curtains = curtains
-
-    ######
+        self.curtains = pyaml.yaml.load(fp)
+        fp.close()
 
     def wantClass(self, cls):
         """
@@ -126,11 +105,8 @@ class Decorator(Plugin):
         """
         Attach attributes matching 'fullname' to the object 'obj'.
         """
-        attribs = self.curtains.get(fullname, [])
-        log.info('_attach_attributes: %s, %s' % (fullname, attribs,))
-        for a in attribs:
-            try:
-                key, val = a.split("=")
-            except ValueError:
-                key, val = (a, True)
-            obj.__dict__[key] = val
+        attribs = self.curtains.get(fullname, {})
+        for attribute_name, attribute_value in attribs.items():
+            if attribute_value is None:
+                attribute_value = True
+            obj.__dict__[attribute_name] = attribute_value
